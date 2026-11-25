@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myportfolio_mobile/screens/menu.dart';
 import 'package:myportfolio_mobile/screens/project_form.dart';
 import 'package:myportfolio_mobile/screens/experience_form.dart';
+import 'package:myportfolio_mobile/screens/project_list_screen.dart';
 
 class ItemCard extends StatelessWidget {
   final ItemHomepage item;
@@ -27,6 +28,15 @@ class ItemCard extends StatelessWidget {
             );
 
           // Navigasi ke halaman Add Project
+          if (item.name == "Lihat Proyek") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProjectListScreen(),
+              ),
+            );
+          }
+
           if (item.name == "Tambah Proyek") {
             Navigator.push(
               context,
