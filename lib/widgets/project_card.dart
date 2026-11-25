@@ -3,6 +3,22 @@ import 'package:myportfolio_mobile/screens/menu.dart';
 import 'package:myportfolio_mobile/screens/project_form.dart';
 import 'package:myportfolio_mobile/screens/experience_form.dart';
 import 'package:myportfolio_mobile/screens/project_list_screen.dart';
+import 'package:myportfolio_mobile/services/auth_state.dart';
+import 'package:myportfolio_mobile/widgets/auth_guard.dart';
+import 'package:provider/provider.dart';
+
+Future<void> logoutWithFeedback(BuildContext context) async {
+  var message = 'Logout berhasil.';
+  try {
+    await context.read<AuthState>().logout();
+  } catch (_) {
+    message = 'Sesi lokal telah dihapus, tetapi pencabutan token di server belum dapat dipastikan.';
+  }
+  if (!context.mounted) return;
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(SnackBar(content: Text(message)));
+}
 
 class ItemCard extends StatelessWidget {
   final ItemHomepage item;
@@ -17,17 +33,7 @@ class ItemCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         // Aksi ketika kartu ditekan oleh pengguna.
-        onTap: () {
-          // Menampilkan SnackBar
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(
-                content: Text("Kamu telah menekan tombol ${item.name}!"),
-              ),
-            );
-
-          // Navigasi ke halaman Add Project
+        onTap: () async {
           if (item.name == "Lihat Proyek") {
             Navigator.push(
               context,
@@ -38,6 +44,8 @@ class ItemCard extends StatelessWidget {
           }
 
           if (item.name == "Tambah Proyek") {
+            final allowed = await ensureLoggedIn(context);
+            if (!context.mounted || !allowed) return;
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const ProjectFormPage()),
@@ -51,6 +59,15 @@ class ItemCard extends StatelessWidget {
                 builder: (context) => const ExperienceFormPage(),
               ),
             );
+          }
+          if (item.name == "Login") {
+            final loggedIn = await ensureLoggedIn(context);
+            if (!context.mounted || !loggedIn) return;
+            ScaffoldMessenger.of(context)
+                .showSnackBar(const SnackBar(content: Text('Login berhasil.')));
+          }
+          if (item.name == "Logout") {
+            await logoutWithFeedback(context);
           }
         },
         child: Container(

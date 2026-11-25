@@ -9,11 +9,15 @@ import 'package:myportfolio_mobile/models/project.dart';
 import 'package:myportfolio_mobile/screens/project_detail_screen.dart';
 import 'package:myportfolio_mobile/screens/project_list_screen.dart';
 import 'package:myportfolio_mobile/services/api_client.dart';
+import 'package:myportfolio_mobile/services/auth_state.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  Widget wrap(ApiClient api, Widget child) => Provider<ApiClient>.value(
-    value: api,
+  Widget wrap(ApiClient api, Widget child) => MultiProvider(
+    providers: [
+      Provider<ApiClient>.value(value: api),
+      ChangeNotifierProvider(create: (_) => AuthState(api)),
+    ],
     child: MaterialApp(home: child),
   );
   const data = {

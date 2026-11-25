@@ -1,23 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:myportfolio_mobile/widgets/left_drawer.dart';
 import 'package:myportfolio_mobile/widgets/project_card.dart';
+import 'package:myportfolio_mobile/services/auth_state.dart';
+import 'package:provider/provider.dart';
 
 class MyHomePage extends StatelessWidget {
-  MyHomePage({super.key});
+  const MyHomePage({super.key});
 
   final String npm = "2506606124";
   final String nama = "Yasmin";
   final String kelas = "PBP B";
 
-  final List<ItemHomepage> items = [
-    ItemHomepage("Lihat Proyek", Icons.folder, Colors.red),
-    ItemHomepage("Tambah Proyek", Icons.add_circle, Colors.blueAccent),
-    ItemHomepage("Tambah Pengalaman", Icons.work, Colors.deepPurple),
-    ItemHomepage("Logout", Icons.logout, Colors.green),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final isLoggedIn = context.watch<AuthState>().isLoggedIn;
+    final items = [
+      ItemHomepage("Lihat Proyek", Icons.folder, Colors.red),
+      ItemHomepage("Tambah Proyek", Icons.add_circle, Colors.blueAccent),
+      ItemHomepage("Tambah Pengalaman", Icons.work, Colors.deepPurple),
+      ItemHomepage(
+        isLoggedIn ? "Logout" : "Login",
+        isLoggedIn ? Icons.logout : Icons.login,
+        Colors.green,
+      ),
+    ];
     // Scaffold menyediakan struktur visual dasar halaman (AppBar, Body, SnackBar).
     return Scaffold(
       // AppBar menampilkan bar bagian atas halaman aplikasi.
@@ -80,7 +86,9 @@ class MyHomePage extends StatelessWidget {
                       padding: const EdgeInsets.all(20),
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
-                      crossAxisCount: MediaQuery.of(context).size.width <= 600 ? 2 : 4,
+                      crossAxisCount: MediaQuery.of(context).size.width <= 600
+                          ? 2
+                          : 4,
                       // shrinkWrap agar ukuran kisi menyesuaikan tinggi konten anak.
                       shrinkWrap: true,
                       children: items.map((ItemHomepage item) {
